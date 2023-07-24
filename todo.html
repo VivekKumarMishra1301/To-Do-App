@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>To-Do</title>
+</head>
+<style>
+    h1 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Style for p */
+        p {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+  /* Style for the form card */
+  .form-card {
+            max-width: 400px;
+            margin: 0 auto;
+            margin-right: auto; /* Updated to align the card to the left side */
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        /* Style for form elements */
+        .form-card label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .form-card input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .form-card input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-card input[type="submit"]:hover {
+            background-color: #444;
+        }
+        .form-card select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .new-card{
+            display: flex;
+          /* Changed flex direction to row */
+          flex-direction: column;
+
+            justify-content: center;
+            align-items: center;
+        }
+        .new-card {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+        .new-card h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .new-card p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .new-card button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .new-card button:hover {
+            background-color: #444;
+        }
+        /* adding new flex */
+
+
+
+
+        .flex-container {
+    display: flex;
+    flex-direction: row; /* Changed flex direction to row */
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.box {
+    width: 200px;
+    height: 40px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 5px;
+}
+
+.checkbox {
+    margin: 5px;
+}
+
+.cross-button {
+    border: none;
+    background-color: transparent;
+    font-size: 16px;
+    cursor: pointer;
+    color: red;
+    margin: 5px;
+}
+
+</style>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/home">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/todo">To Do</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h1>Welcome to To-Do App</h1>
+        <p>Ham Jante Hai Aap Bhi Bhool Jaate Hai</p>
+        <!-- Input box and Submit button -->
+        <form>
+            <div class="form-card" id="frm">
+                <form method="POST">
+                    <label for="task">Enter your task:</label>
+                    <input type="text" id="task" name="task" required>
+                    <label for="priority">Select priority:</label>
+                <select id="priority" name="priority">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                    <input type="submit" id="sub" value="Add Task" >
+                </form>
+            </div>
+        </form>
+        <div class="new-card" id="todo">
+            <h2>Your To-Do Task</h2>
+            
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
