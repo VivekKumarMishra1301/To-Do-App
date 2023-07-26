@@ -28,6 +28,8 @@ submitBut.addEventListener("click",function(){
     }).then(function(response){
         if(response.status === 200){
             showToDo(todo);
+        }else if(response.status===401){
+            window.location.href="/login";
         }else{
             alert("Something Went wrong");
         }
@@ -102,6 +104,8 @@ function manageDelete(cnt) {
             if(response.status === 200){
                 nt.removeChild(ddiv);
                 
+            }else if(response.status===401){
+                window.location.href="/login";
             }else{
                 alert("Something Went wrong");
             }
@@ -142,6 +146,8 @@ function manageCheck(cnt) {
                     t.style.textDecoration="none";
                     p.style.textDecoration="none";
                 }
+            }else if(response.status===401){
+                window.location.href="/login";
             }else{
                 alert("Something Went wrong");
             }
@@ -164,6 +170,8 @@ function markCheck(cnt){
 fetch("/todo-data").then(function(response){
     if(response.status === 200){
         return response.json();
+    }else if(response.status===401){
+        window.location.href="/login";
     }else{
         alert("Something Went Wrong");
     }
