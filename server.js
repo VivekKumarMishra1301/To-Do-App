@@ -1,39 +1,103 @@
 const express = require('express');
 const app = express();
 const fs=require('fs');
-//middleware to extract the dat came in the from of chunks and the buffer
-app.use(express.json());//take out the data and add in the request as the name of the body
+var session = require('express-session');
 
+//middleware to extract the dat came in the from of chunks and the buffer
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    // cookie: { secure: true }
+  }));
+app.use(express.json());//take out the data and add in the request as the name of the body
+app.use(express.urlencoded({extended:true}));
 
  
 
 app.get('/', function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.redirect('/login');
+        return;
+    }
     res.sendFile(__dirname + "/index.html");
 });
 app.get('/style.css', function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.redirect('/login');
+        return;
+    }
     res.sendFile(__dirname + "/style.css");
 });
 app.get('/about', function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.redirect('/login');
+        return;
+    }
     res.sendFile(__dirname + "/about.html");
 });
 app.get('/contact', function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.redirect('/login');
+        return;
+    }
     res.sendFile(__dirname + "/contact.html");
 });
 app.get('/todo', function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.redirect('/login');
+        return;
+    }
     res.sendFile(__dirname + "/todo.html");
 });
 app.get('/home', function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.redirect('/login');
+        return;
+    }
     res.sendFile(__dirname + "/index.html");
 });
 app.get('/script.js', function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.redirect('/login');
+        return;
+    }
     res.sendFile(__dirname + "/script.js");
 });
 
+app.get("/login",function (req, res) {
+    res.sendFile(__dirname + "/login.html");
+});
 
+
+
+
+//handling login page
+
+app.post("/login",function (req, res) {
+    const username=req.body.username;
+    const password=req.body.password;
+    console.log(username,password);
+    if(username=='n' && password=='n'){
+        req.session.isLoggedIn=true;
+        req.session.username=username;
+        res.redirect('/');
+        
+    }else{
+        res.status(401).send("error");
+        res.redirect('/login');
+        
+    }
+
+});
 
 //Handling the post request from the client
 
 app.post('/todo',function (req, res) {
+    if(!checkLoggedIn(req)){
+        res.status(401).send("error");
+        return;
+    }
     console.log(typeof req.body);
 
     fs.readFile('todoTask.txt','utf-8',function(err, data){
@@ -78,6 +142,11 @@ app.post('/todo',function (req, res) {
 
 //handling get request from the client
 app.get('/todo-data',function(req, res){
+
+    if(!checkLoggedIn(req)){
+        res.status(401).send("error");
+        return;
+    }
     readAllTodos(function(err, data){
         if(err){
             res.status(500).send("error");
@@ -91,6 +160,10 @@ app.get('/todo-data',function(req, res){
 
 
 app.post("/del",function(req, res){
+    if(!checkLoggedIn(req)){
+        res.status(401).send("error");
+        return;
+    }
     readAllToDel(req.body,function(err, data){
         if(err){
             res.status(500).send("error");
@@ -101,6 +174,10 @@ app.post("/del",function(req, res){
     });
 });
 app.post("/checker",function(req, res){
+    if(!checkLoggedIn(req)){
+        res.status(401).send("error");
+        return;
+    }
     readAllToCheck(req.body,function(err, data){
         if(err){
             res.status(500).send("error");
@@ -247,3 +324,17 @@ function readAllToCheck(obj,callback){
 
     });
 }
+
+function checkLoggedIn(req){
+    if(!req.session.isLoggedIn){
+        return false;
+    }else{
+        return true;
+    }
+}
+
+
+
+
+
+//Read Express-session Documentation
