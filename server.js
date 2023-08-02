@@ -1,9 +1,10 @@
 const express = require('express');
 const app = express();
 const fs=require('fs');
+const multer  = require('multer')
 var session = require('express-session');
-
-//middleware to extract the dat came in the from of chunks and the buffer
+const upload = multer({ dest: 'uploads/' })
+//middleware to extract the dat came in th;e from of chunks and the buffer
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
@@ -12,7 +13,7 @@ app.use(session({
   }));
 app.use(express.json());//take out the data and add in the request as the name of the body
 app.use(express.urlencoded({extended:true}));
-
+app.use(express.static('uploads'));
  
 
 app.get('/', function (req, res) {
@@ -93,13 +94,17 @@ app.post("/login",function (req, res) {
 
 //Handling the post request from the client
 
-app.post('/todo',function (req, res) {
-    if(!checkLoggedIn(req)){
+app.post('/todo',upload.single('image'),function (dat, res) {
+    if(!checkLoggedIn(dat)){
         res.status(401).send("error");
         return;
     }
-    console.log(typeof req.body);
-
+    // console.log(upload.single(req.body.image));
+    // console.log(dat.file);
+    const req={todoTask:dat.body.todo,priority:dat.body.priority,checked:dat.body.checked,image:dat.file.filename};
+    console.log(req);
+    // console.log(typeof dat.body);
+    // console.log(req.body.image);
     fs.readFile('todoTask.txt','utf-8',function(err, data){
 
         if(err) {
@@ -113,7 +118,7 @@ app.post('/todo',function (req, res) {
 
         try{
             data=JSON.parse(data);
-            data.push(req.body);
+            data.push(req);
 
 
             fs.writeFile("todoTask.txt",JSON.stringify(data),function(err){
@@ -121,7 +126,7 @@ app.post('/todo',function (req, res) {
                     res.status(500).json({message:err.message+" Internal"});
                     return;
                 }
-                res.status(200).json({message:"Todo saved successFully"});
+                res.status(200).json(req);
             });
 
 
@@ -150,7 +155,7 @@ app.get('/todo-data',function(req, res){
     readAllTodos(function(err, data){
         if(err){
             res.status(500).send("error");
-            console.log("error");
+            // console.log("error");
             return;
         }
         res.status(200).json(data);
@@ -284,12 +289,12 @@ function readAllToCheck(obj,callback){
             if(k[key].todoTask===obj.todoTask){
                 console.log(k[key].checked);
                 obj.checked=!obj.checked;
-                k[key]=obj;
+                // k[key]=obj;
                 if(obj.checked===true){
-                    k[key].checked=false;
+                    k[key].checked="false";
                 }else{
                     console.log("hello");
-                    k[key].checked=true; 
+                    k[key].checked="true"; 
                 }
                 break;
             }
