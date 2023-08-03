@@ -2,6 +2,7 @@ const submitBut=document.getElementById("sub");
 const inp=document.getElementById("task");
 const prior=document.getElementById("priority");
 const nt=document.getElementById("todo");
+const fl=document.getElementById("fl");
 let cnt=0;
 let check=document.querySelectorAll(".checkbox");
 submitBut.addEventListener("click",function(){
@@ -11,29 +12,43 @@ submitBut.addEventListener("click",function(){
     const todoTask=inp.value;
     const priority=prior.value;
     const checked=false;
-    if(!todoTask){
-        alert('Please Enter a Task');
-    }
+    const image=fl.files[0];
+    console.log(image);
+    // if(!todoTask){
+    //     alert('Please Enter a Task');
+    // }
+    // if(!image){
+    //     alert('Please select an Image');
+    // }
     // console.log(todotask);
 
-    const todo={todoTask,priority,checked};
-
-
+    const todo={todoTask,priority,checked,image};
+    const formData=new FormData();
+    formData.append('todo',todoTask);
+    formData.append('priority',priority);
+    formData.append('checked',checked);
+    formData.append('image',image);
+    inp.value="";
+    fl.value="";
     fetch("/todo",{
         method:"POST",
-        headers:{//headers are used with http to tell which type of data you are sending to process it reduces the computation of variety of types of files because you can send any form of data to the server
-            "Content-Type": "application/json"
-        },
-        body:JSON.stringify(todo),
+        // headers:{//headers are used with http to tell which type of data you are sending to process it reduces the computation of variety of types of files because you can send any form of data to the server
+        //     "Content-Type": "application/json"
+        // },
+        // body:JSON.stringify(todo),
+        body: formData,
     }).then(function(response){
         if(response.status === 200){
-            showToDo(todo);
+            return response.json();
         }else if(response.status===401){
             window.location.href="/login";
         }else{
-            alert("Something Went wrong");
+            alert("Something Went Wrong");
         }
-
+    }).then(function(tod){
+        // tod.forEach(function(todo){
+            showToDo(tod);
+        // });
     });
 });
 
@@ -41,13 +56,14 @@ submitBut.addEventListener("click",function(){
 
 
 function showToDo(todo){
+    console.log(todo);
     const todoTextNode=document.createElement("div");
     todoTextNode.setAttribute("class", "flex-container");
     todoTextNode.setAttribute("id","pdiv"+cnt);
     const todo1=document.createElement("div");
     todo1.setAttribute("class", "box")
     todo1.setAttribute("id","divt"+cnt);
-    todo1.innerText=todo.todoTask;
+    todo1.innerText=todo.todo;
     const p1=document.createElement("div");
     p1.setAttribute("class", "box");
     p1.setAttribute("id", "divp"+cnt);
@@ -56,7 +72,7 @@ function showToDo(todo){
     c1.setAttribute("type", "checkbox");
     c1.setAttribute("class","checkbox");
     c1.setAttribute("id","c"+cnt);
-    if(todo.checked){
+    if(todo.checked==='true'){
         c1.setAttribute("checked", "checked");
         p1.setAttribute("style","text-decoration:line-through");
         todo1.setAttribute("style","text-decoration:line-through");
@@ -66,8 +82,12 @@ function showToDo(todo){
     b1.setAttribute("class","cross-button");
     b1.setAttribute("id","b"+cnt);
     b1.innerText="X";
+    const img=document.createElement("img");
+    img.setAttribute("src",todo.image);
+
     todoTextNode.appendChild(todo1);
     todoTextNode.appendChild(p1);
+    todoTextNode.appendChild(img);
     todoTextNode.appendChild(c1);
     todoTextNode.appendChild(b1);
     nt.appendChild(todoTextNode);

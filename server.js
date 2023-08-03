@@ -1,18 +1,21 @@
 const express = require('express');
 const app = express();
 const fs=require('fs');
+const multer  = require('multer')
 var session = require('express-session');
-
-//middleware to extract the dat came in the from of chunks and the buffer
+const upload = multer({ dest: 'uploads/' })
+//middleware to extract the dat came in th;e from of chunks and the buffer
 app.use(session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,
     // cookie: { secure: true }
   }));
+  const db=require('./model/db');
+  const todoModel=require('./model/todo');
 app.use(express.json());//take out the data and add in the request as the name of the body
 app.use(express.urlencoded({extended:true}));
-
+app.use(express.static('uploads'));
  
 
 app.get('/', function (req, res) {
@@ -93,48 +96,66 @@ app.post("/login",function (req, res) {
 
 //Handling the post request from the client
 
-app.post('/todo',function (req, res) {
-    if(!checkLoggedIn(req)){
+app.post('/todo',upload.single('image'),function (dat, res) {
+    if(!checkLoggedIn(dat)){
         res.status(401).send("error");
         return;
     }
-    console.log(typeof req.body);
 
-    fs.readFile('todoTask.txt','utf-8',function(err, data){
-
-        if(err) {
-            res.status(500).json({message:err.message+" Internal Server error"});
-            return;
-        }
-
-        if(data.length===0){
-            data="[]";
-        }
-
-        try{
-            data=JSON.parse(data);
-            data.push(req.body);
-
-
-            fs.writeFile("todoTask.txt",JSON.stringify(data),function(err){
-                if(err){
-                    res.status(500).json({message:err.message+" Internal"});
-                    return;
-                }
-                res.status(200).json({message:"Todo saved successFully"});
-            });
-
-
-
-
-        }
-        catch(err){
-            res.status(500).json({message:err.message+" Internal Server error"});
-            return;
-        }
-
-
+    const todos={
+        todo:dat.body.todo,
+        priority:dat.body.priority,
+        checked:dat.body.checked,
+        image:dat.file.filename,
+    };
+    const req={todo:dat.body.todo,priority:dat.body.priority,checked:dat.body.checked,image:dat.file.filename};
+    todoModel.create(todos).then(function(){
+        res.status(200).json(req);
+    }).catch(function(err){
+        res.status(500).json({message:err.message+" Internal Server error"});
     });
+
+
+    // // console.log(upload.single(req.body.image));
+    // // console.log(dat.file);
+    // console.log(req);
+    // // console.log(typeof dat.body);
+    // // console.log(req.body.image);
+    // fs.readFile('todoTask.txt','utf-8',function(err, data){
+
+    //     if(err) {
+    //         res.status(500).json({message:err.message+" Internal Server error"});
+    //         return;
+    //     }
+
+    //     if(data.length===0){
+    //         data="[]";
+    //     }
+
+    //     try{
+    //         data=JSON.parse(data);
+    //         data.push(req);
+
+
+    //         fs.writeFile("todoTask.txt",JSON.stringify(data),function(err){
+    //             if(err){
+    //                 res.status(500).json({message:err.message+" Internal"});
+    //                 return;
+    //             }
+    //             res.status(200).json(req);
+    //         });
+
+
+
+
+    //     }
+    //     catch(err){
+    //         res.status(500).json({message:err.message+" Internal Server error"});
+    //         return;
+    //     }
+
+
+    // });
 
     console.log(req.body);
 });
@@ -147,14 +168,25 @@ app.get('/todo-data',function(req, res){
         res.status(401).send("error");
         return;
     }
-    readAllTodos(function(err, data){
-        if(err){
-            res.status(500).send("error");
-            console.log("error");
-            return;
-        }
-        res.status(200).json(data);
-    });
+    todoModel.find({})
+  .then((items) => {
+    console.log(items);
+    res.status(200).json(items);
+    return;
+  })
+  .catch((err) => {
+    console.error('Error reading data from the collection:', err);
+    res.status(500).json({message:err.message+" Internal Server error"});
+    return;
+  });
+    // readAllTodos(function(err, data){
+    //     if(err){
+    //         res.status(500).send("error");
+    //         // console.log("error");
+    //         return;
+    //     }
+    //     res.status(200).json(data);
+    // });
 });
 
 
@@ -164,37 +196,125 @@ app.post("/del",function(req, res){
         res.status(401).send("error");
         return;
     }
-    readAllToDel(req.body,function(err, data){
-        if(err){
-            res.status(500).send("error");
-            console.log("error");
-            return;
-        }
-        res.status(200).json(data);
-    });
+
+
+    const todoDel=req.body.todoTask;
+    todoModel.findOne({todo:todoDel})
+  .then((document) => {
+    if (document) {
+      console.log('Found document:', document);
+      const path="./uploads/"+document.image;
+        fs.unlink(path, (err) => {
+            if (err) {
+              console.error('Error deleting file:', err);
+            } else {
+              console.log('File deleted successfully!');
+            }
+          });
+    } else {
+      console.log('No documents found in the collection.');
+    }
+  })
+  .catch((err) => {
+    console.error('Error finding document:', err);
+  });
+
+  todoModel.deleteOne({ todo: todoDel })
+  .then((result) => {
+    if (result.deletedCount === 1) {
+      console.log('Document deleted successfully.');
+      res.status(200).json("Document deleted successfully");
+    } else {
+        console.log('Document not found.');
+        res.status(500).send("error");
+        return;
+    }
+  })
+  .catch((err) => {
+    console.error('Error deleting document:', err);
+    res.status(500).send("error");
+        return;
+  });
+    // readAllToDel(req.body,function(err, data){
+    //     if(err){
+    //         res.status(500).send("error");
+    //         console.log("error");
+    //         return;
+    //     }
+    //     res.status(200).json(data);
+    // });
 });
 app.post("/checker",function(req, res){
     if(!checkLoggedIn(req)){
         res.status(401).send("error");
         return;
     }
-    readAllToCheck(req.body,function(err, data){
-        if(err){
-            res.status(500).send("error");
-            console.log("error");
-            return;
-        }
-        res.status(200).json(data);
+
+
+    const todoToUpdate = req.body.todoTask; // Replace this with the todo value you want to update
+let newCheckedValue = req.body.checked; // Replace this with the new checked value (true or false)
+// if(req.body.checked===true){
+//     newCheckedValue="tru";
+// }else{
+//     newCheckedValue="true";
+// }
+console.log(todoToUpdate);
+console.log(newCheckedValue);
+// Update the 'checked' field for the document with the specified 'todo' value
+todoModel.findOneAndUpdate({ todo: todoToUpdate }, { $set: { checked: newCheckedValue } })
+  .then((updatedDocument) => {
+    if (updatedDocument) {
+      console.log('Document updated:', updatedDocument);
+      res.status(200).json(updatedDocument);
+      return;
+    } else {
+        res.status(500).send("error");
+      console.log('Document not found.');
+      return;
+    }
+  })
+  .catch((err) => {
+    console.error('Error updating document:', err);
+  });
+
+
+
+
+    // readAllToCheck(req.body,function(err, data){
+    //     if(err){
+    //         res.status(500).send("error");
+    //         console.log("error");
+    //         return;
+    //     }
+    //     res.status(200).json(data);
+    // });
+});
+
+
+
+
+db.init().then(function(){
+    console.log("db connected");
+    app.listen(3000, function () {
+        console.log("server is on at port 3000");
     });
+}).catch(function(err){
+    console.log(err);
 });
 
 
 
 
 
-app.listen(3000, function () {
-    console.log("server is on at port 3000");
-});
+
+
+
+
+
+
+
+
+
 
 
 function readAllTodos(callback) {
@@ -234,7 +354,15 @@ function readAllToDel(obj,callback){
                 it++;
             }
         }
-
+        const img=k[it].image;
+        const path="./uploads/"+img;
+        fs.unlink(path, (err) => {
+            if (err) {
+              console.error('Error deleting file:', err);
+            } else {
+              console.log('File deleted successfully!');
+            }
+          });
         k.splice(it,1);
        
         console.log(k);
@@ -284,12 +412,12 @@ function readAllToCheck(obj,callback){
             if(k[key].todoTask===obj.todoTask){
                 console.log(k[key].checked);
                 obj.checked=!obj.checked;
-                k[key]=obj;
+                // k[key]=obj;
                 if(obj.checked===true){
-                    k[key].checked=false;
+                    k[key].checked="false";
                 }else{
                     console.log("hello");
-                    k[key].checked=true; 
+                    k[key].checked="true"; 
                 }
                 break;
             }
