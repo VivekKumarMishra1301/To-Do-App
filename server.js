@@ -239,7 +239,15 @@ function readAllToDel(obj,callback){
                 it++;
             }
         }
-
+        const img=k[it].image;
+        const path="./uploads/"+img;
+        fs.unlink(path, (err) => {
+            if (err) {
+              console.error('Error deleting file:', err);
+            } else {
+              console.log('File deleted successfully!');
+            }
+          });
         k.splice(it,1);
        
         console.log(k);
