@@ -169,7 +169,7 @@ img{
         <form>
             <div class="form-card" id="frm">
                 <form method="POST">
-                    <label for="task">Enter your task:</label>
+                    <label for="task" required>Enter your task:</label>
                     <input type="text" id="task" name="task" required>
                     <label for="priority">Select priority:</label>
                 <select id="priority" name="priority">
@@ -178,7 +178,11 @@ img{
                     <option value="high">High</option>
                 </select>
                 <input type="file" id="fl"></input>
+
+                    <input type="submit" id="sub" value="Add Task" required>
+
                     <input type="submit" id="sub" value="Add Task" >
+
                 </form>
             </div>
         </form>

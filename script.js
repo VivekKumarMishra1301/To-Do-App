@@ -14,9 +14,18 @@ submitBut.addEventListener("click",function(){
     const checked=false;
     const image=fl.files[0];
     console.log(image);
+
+    // if(!todoTask){
+    //     alert('Please Enter a Task');
+    // }
+    // if(!image){
+    //     alert('Please select an Image');
+    // }
+=======
     if(!todoTask){
         alert('Please Enter a Task');
     }
+
     // console.log(todotask);
 
     const todo={todoTask,priority,checked,image};
@@ -25,6 +34,9 @@ submitBut.addEventListener("click",function(){
     formData.append('priority',priority);
     formData.append('checked',checked);
     formData.append('image',image);
+
+    inp.value="";
+    fl.value="";
 
     fetch("/todo",{
         method:"POST",
@@ -59,7 +71,7 @@ function showToDo(todo){
     const todo1=document.createElement("div");
     todo1.setAttribute("class", "box")
     todo1.setAttribute("id","divt"+cnt);
-    todo1.innerText=todo.todoTask;
+    todo1.innerText=todo.todo;
     const p1=document.createElement("div");
     p1.setAttribute("class", "box");
     p1.setAttribute("id", "divp"+cnt);
