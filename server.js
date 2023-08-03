@@ -354,152 +354,152 @@ db.init().then(function(){
 
 
 
-function readAllTodos(callback) {
-    fs.readFile("todoTask.txt","utf-8",function(err,data){
-        // 
+// function readAllTodos(callback) {
+//     fs.readFile("todoTask.txt","utf-8",function(err,data){
+//         // 
 
-        if(err) {
-            callback(err);
-            return;
-        }
-        if(data.length===0){ 
-            data="[]";
-        }
+//         if(err) {
+//             callback(err);
+//             return;
+//         }
+//         if(data.length===0){ 
+//             data="[]";
+//         }
 
-        try{
-            data=JSON.parse(data);
-            callback(null,data);
-        }
-        catch(err){
-            callback(err);
-        }
+//         try{
+//             data=JSON.parse(data);
+//             callback(null,data);
+//         }
+//         catch(err){
+//             callback(err);
+//         }
 
-    });
-}
-function readAllToDel(obj,callback){
-    fs.readFile("todoTask.txt","utf-8",function(err,data){
-        console.log(typeof data)
-        let k=JSON.parse(data);
+//     });
+// }
+// function readAllToDel(obj,callback){
+//     fs.readFile("todoTask.txt","utf-8",function(err,data){
+//         console.log(typeof data)
+//         let k=JSON.parse(data);
        
-        let it=0;
-        let m={};
-        for(const key in k){
-            if(k[key].todoTask===obj.todoTask){
+//         let it=0;
+//         let m={};
+//         for(const key in k){
+//             if(k[key].todoTask===obj.todoTask){
                
-                break;
-            }else{
-                it++;
-            }
-        }
-        const img=k[it].image;
-        const path="./uploads/"+img;
-        fs.unlink(path, (err) => {
-            if (err) {
-              console.error('Error deleting file:', err);
-            } else {
-              console.log('File deleted successfully!');
-            }
-          });
-        k.splice(it,1);
+//                 break;
+//             }else{
+//                 it++;
+//             }
+//         }
+//         const img=k[it].image;
+//         const path="./uploads/"+img;
+//         fs.unlink(path, (err) => {
+//             if (err) {
+//               console.error('Error deleting file:', err);
+//             } else {
+//               console.log('File deleted successfully!');
+//             }
+//           });
+//         k.splice(it,1);
        
-        console.log(k);
-        if(err) {
-            callback(err);
-            return;
-        }
-        if(data.length===0){ 
-            data="[]";
-        }
+//         console.log(k);
+//         if(err) {
+//             callback(err);
+//             return;
+//         }
+//         if(data.length===0){ 
+//             data="[]";
+//         }
 
-        try{
+//         try{
 
-            fs.writeFile("todoTask.txt",JSON.stringify(k),function(err){
-                if(err){
-                    res.status(500).json({message:err.message+" Internal"});
-                    return;
-                }
-                callback(null,data);
-                // res.status(200).json({message:"Todo saved successFully"});
-            });
-
-
-            // data=JSON.parse(data);
-        }
-        catch(err){
-            callback(err);
-        }
-
-    });
-}
+//             fs.writeFile("todoTask.txt",JSON.stringify(k),function(err){
+//                 if(err){
+//                     res.status(500).json({message:err.message+" Internal"});
+//                     return;
+//                 }
+//                 callback(null,data);
+//                 // res.status(200).json({message:"Todo saved successFully"});
+//             });
 
 
+//             // data=JSON.parse(data);
+//         }
+//         catch(err){
+//             callback(err);
+//         }
 
-function readAllToCheck(obj,callback){
-    fs.readFile("todoTask.txt","utf-8",function(err,data){
-        console.log(typeof data);
-        let k=JSON.parse(data);
-        // console.log(k[2]);
-        // k.splice(2,1);
-        // console.log(k[2]);
-        // console.log(typeof k)
-
-        // delete k.obj;
-        console.log(obj);
-        for(const key in k){
-            if(k[key].todoTask===obj.todoTask){
-                console.log(k[key].checked);
-                obj.checked=!obj.checked;
-                // k[key]=obj;
-                if(obj.checked===true){
-                    k[key].checked="false";
-                }else{
-                    console.log("hello");
-                    k[key].checked="true"; 
-                }
-                break;
-            }
-        }
-
-        console.log(k);
-        if(err) {
-            callback(err);
-            return;
-        }
-        if(data.length===0){ 
-            data="[]";
-        }
-
-        try{
-
-            fs.writeFile("todoTask.txt",JSON.stringify(k),function(err){
-                if(err){
-                    res.status(500).json({message:err.message+" Internal"});
-                    return;
-                }
-                callback(null,data);
-                // res.status(200).json({message:"Todo saved successFully"});
-            });
-
-
-            // data=JSON.parse(data);
-        }
-        catch(err){
-            callback(err);
-        }
-
-    });
-}
-
-function checkLoggedIn(req){
-    if(!req.session.isLoggedIn){
-        return false;
-    }else{
-        return true;
-    }
-}
+//     });
+// }
 
 
 
+// function readAllToCheck(obj,callback){
+//     fs.readFile("todoTask.txt","utf-8",function(err,data){
+//         console.log(typeof data);
+//         let k=JSON.parse(data);
+//         // console.log(k[2]);
+//         // k.splice(2,1);
+//         // console.log(k[2]);
+//         // console.log(typeof k)
+
+//         // delete k.obj;
+//         console.log(obj);
+//         for(const key in k){
+//             if(k[key].todoTask===obj.todoTask){
+//                 console.log(k[key].checked);
+//                 obj.checked=!obj.checked;
+//                 // k[key]=obj;
+//                 if(obj.checked===true){
+//                     k[key].checked="false";
+//                 }else{
+//                     console.log("hello");
+//                     k[key].checked="true"; 
+//                 }
+//                 break;
+//             }
+//         }
+
+//         console.log(k);
+//         if(err) {
+//             callback(err);
+//             return;
+//         }
+//         if(data.length===0){ 
+//             data="[]";
+//         }
+
+//         try{
+
+//             fs.writeFile("todoTask.txt",JSON.stringify(k),function(err){
+//                 if(err){
+//                     res.status(500).json({message:err.message+" Internal"});
+//                     return;
+//                 }
+//                 callback(null,data);
+//                 // res.status(200).json({message:"Todo saved successFully"});
+//             });
 
 
-//Read Express-session Documentation
+//             // data=JSON.parse(data);
+//         }
+//         catch(err){
+//             callback(err);
+//         }
+
+//     });
+// }
+
+// function checkLoggedIn(req){
+//     if(!req.session.isLoggedIn){
+//         return false;
+//     }else{
+//         return true;
+//     }
+// }
+
+
+
+
+
+// //Read Express-session Documentation
