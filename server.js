@@ -102,6 +102,7 @@ app.post('/todo',upload.single('image'),function (dat, res) {
         return;
     }
 
+
     const todos={
         todo:dat.body.todo,
         priority:dat.body.priority,
@@ -115,6 +116,15 @@ app.post('/todo',upload.single('image'),function (dat, res) {
         res.status(500).json({message:err.message+" Internal Server error"});
     });
 
+    // console.log(upload.single(req.body.image));
+    // console.log(dat.file);
+    const req={todoTask:dat.body.todo,priority:dat.body.priority,checked:dat.body.checked,image:dat.file.filename};
+    console.log(req);
+    // console.log(typeof dat.body);
+    // console.log(req.body.image);
+    fs.readFile('todoTask.txt','utf-8',function(err, data){
+
+
 
     // // console.log(upload.single(req.body.image));
     // // console.log(dat.file);
@@ -123,18 +133,34 @@ app.post('/todo',upload.single('image'),function (dat, res) {
     // // console.log(req.body.image);
     // fs.readFile('todoTask.txt','utf-8',function(err, data){
 
+
     //     if(err) {
     //         res.status(500).json({message:err.message+" Internal Server error"});
     //         return;
     //     }
 
+        try{
+            data=JSON.parse(data);
+            data.push(req);
+
+
     //     if(data.length===0){
     //         data="[]";
     //     }
 
+
     //     try{
     //         data=JSON.parse(data);
     //         data.push(req);
+
+            fs.writeFile("todoTask.txt",JSON.stringify(data),function(err){
+                if(err){
+                    res.status(500).json({message:err.message+" Internal"});
+                    return;
+                }
+                res.status(200).json(req);
+            });
+
 
 
     //         fs.writeFile("todoTask.txt",JSON.stringify(data),function(err){
@@ -168,6 +194,7 @@ app.get('/todo-data',function(req, res){
         res.status(401).send("error");
         return;
     }
+
     todoModel.find({})
   .then((items) => {
     console.log(items);
@@ -187,6 +214,16 @@ app.get('/todo-data',function(req, res){
     //     }
     //     res.status(200).json(data);
     // });
+
+    readAllTodos(function(err, data){
+        if(err){
+            res.status(500).send("error");
+            // console.log("error");
+            return;
+        }
+        res.status(200).json(data);
+    });
+
 });
 
 

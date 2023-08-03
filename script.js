@@ -14,12 +14,18 @@ submitBut.addEventListener("click",function(){
     const checked=false;
     const image=fl.files[0];
     console.log(image);
+
     // if(!todoTask){
     //     alert('Please Enter a Task');
     // }
     // if(!image){
     //     alert('Please select an Image');
     // }
+=======
+    if(!todoTask){
+        alert('Please Enter a Task');
+    }
+
     // console.log(todotask);
 
     const todo={todoTask,priority,checked,image};
@@ -28,8 +34,10 @@ submitBut.addEventListener("click",function(){
     formData.append('priority',priority);
     formData.append('checked',checked);
     formData.append('image',image);
+
     inp.value="";
     fl.value="";
+
     fetch("/todo",{
         method:"POST",
         // headers:{//headers are used with http to tell which type of data you are sending to process it reduces the computation of variety of types of files because you can send any form of data to the server
