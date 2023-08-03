@@ -15,13 +15,15 @@ submitBut.addEventListener("click",function(){
     const image=fl.files[0];
     console.log(image);
 
-    // if(!todoTask){
-    //     alert('Please Enter a Task');
-    // }
-    // if(!image){
-    //     alert('Please select an Image');
-    // }
-=======
+    if(!todoTask){
+        alert('Please Enter a Task');
+        return;
+    }
+    if(!image){
+        alert('Please select an Image');
+        return;
+    }
+
     if(!todoTask){
         alert('Please Enter a Task');
     }
